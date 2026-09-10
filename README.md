@@ -23,7 +23,7 @@ Mengatasi inefisiensi pengecekan tempat sampah secara manual dan memperbaiki alu
 - **Sultan:** Pengembangan UI/UX Jetpack Compose untuk peran/role Warga dan fitur pemanggilan (Request Location).
 - **Erlangga (Angga):** Pengembangan UI/UX Jetpack Compose untuk peran/role Petugas, manajemen notifikasi, dan *local persistence* (Room).
 
-## 5. Dokumentasi Penggunaan AI (Sesuai Ketentuan)
+## 5. Dokumentasi Penggunaan AI
 - **Tujuan:** Membantu menyusun struktur proposal awal, merumuskan ide integrasi peta (Google Maps), dan membuat templat Markdown README.
 - **Sumber verifikasi:** Modul Praktikum Pertemuan 1 dan Dokumentasi Resmi Google Maps SDK for Android.
 - **Bagian yang diadaptasi:** Matriks seleksi masalah dan kerangka dokumen `README.md`.
