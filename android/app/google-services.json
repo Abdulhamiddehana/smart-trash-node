@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "1095046038097",
+    "firebase_url": "https://smart-trash-node-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "smart-trash-node",
+    "storage_bucket": "smart-trash-node.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1095046038097:android:6fb0743fa9cb4f3cabee70",
+        "android_client_info": {
+          "package_name": "com.hamid.smarttrashnode"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAriuF00u-sGkT7Fo_uD6mIKjZvPcZ-a_g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

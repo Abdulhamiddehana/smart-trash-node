@@ -1,0 +1,85 @@
+#include <WiFi.h>
+#include <Firebase_ESP_Client.h>
+#include <addons/TokenHelper.h>
+#include <addons/RTDBHelper.h>
+
+#define WIFI_SSID "ESP32"
+#define WIFI_PASSWORD "012345678"
+#define API_KEY "AIzaSyAriuF00u-sGkT7Fo_uD6mIKjZvPcZ-a_g"
+#define DATABASE_URL "smart-trash-node-default-rtdb.asia-southeast1.firebasedatabase.app"
+
+#define TRIG_PIN 4
+#define ECHO_PIN 5
+#define BAT_SENSE_PIN 0
+
+// === KALIBRASI DIMENSI ===
+#define KEDALAMAN_MAKSIMAL_CM 60 
+#define BATAS_PENUH_CM 15        
+
+RTC_DATA_ATTR int status_terakhir = -1; 
+String id_alat = "node_1"; 
+
+FirebaseData fbdo;
+FirebaseAuth auth;
+FirebaseConfig config;
+int jarak_cm = 0, status_sekarang = 0, baterai_persen = 0;
+
+void setup() {
+  Serial.begin(115200);
+  delay(2000); 
+
+  pinMode(TRIG_PIN, OUTPUT);
+  pinMode(ECHO_PIN, INPUT);
+
+  // 1. BACA SENSOR JARAK
+  digitalWrite(TRIG_PIN, LOW); delayMicroseconds(2);
+  digitalWrite(TRIG_PIN, HIGH); delayMicroseconds(10);
+  digitalWrite(TRIG_PIN, LOW);
+  
+  long duration = pulseIn(ECHO_PIN, HIGH, 30000); 
+  jarak_cm = (duration == 0) ? KEDALAMAN_MAKSIMAL_CM : (duration * 0.034 / 2);
+  if (jarak_cm > KEDALAMAN_MAKSIMAL_CM) jarak_cm = KEDALAMAN_MAKSIMAL_CM;
+  status_sekarang = (jarak_cm <= BATAS_PENUH_CM) ? 1 : 0; 
+
+  // 2. BACA BATERAI & JADIKAN PERSENTASE
+  uint32_t adc_mv = analogReadMilliVolts(BAT_SENSE_PIN);
+  float tegangan_baterai = (adc_mv * 2.0) / 1000.0; 
+  // Map tegangan 3.1V (310) ke 0%, dan 4.2V (420) ke 100%
+  baterai_persen = constrain(map(tegangan_baterai * 100, 310, 420, 0, 100), 0, 100);
+
+  // 3. CEK TRANSISI & KIRIM KE FIREBASE
+  if (status_sekarang != status_terakhir) {
+    WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+    int retries = 0;
+    while (WiFi.status() != WL_CONNECTED && retries < 20) { delay(500); retries++; }
+
+    if (WiFi.status() == WL_CONNECTED) {
+      config.api_key = API_KEY;
+      config.database_url = DATABASE_URL;
+      config.signer.test_mode = true;
+      Firebase.begin(&config, &auth);
+
+      String path_jarak = "/sensor/" + id_alat + "/jarak";
+      String path_baterai = "/sensor/" + id_alat + "/baterai";
+      String path_status = "/sensor/" + id_alat + "/status";
+
+      if(Firebase.RTDB.setInt(&fbdo, path_jarak.c_str(), jarak_cm)) {
+        status_terakhir = status_sekarang; 
+      }
+      
+      // Kirim kembali persentase baterai ke Firebase
+      Firebase.RTDB.setInt(&fbdo, path_baterai.c_str(), baterai_persen);
+      Firebase.RTDB.setInt(&fbdo, path_status.c_str(), status_sekarang);
+      
+      delay(500); 
+      WiFi.disconnect(true);
+      WiFi.mode(WIFI_OFF);
+    }
+  }
+
+  // 4. TIDUR
+  esp_sleep_enable_timer_wakeup(3 * 1000000ULL);
+  esp_deep_sleep_start(); 
+}
+
+void loop() {}
