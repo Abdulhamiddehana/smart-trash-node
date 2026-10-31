@@ -7,12 +7,13 @@ plugins {
 
 android {
     namespace = "com.hamid.smarttrashnode"
-    compileSdk = flutter.compileSdkVersion
+    compileSdk = 36
     ndkVersion = flutter.ndkVersion
 
-    compileOptions {
+compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
+        isCoreLibraryDesugaringEnabled = true // <--- TAMBAHKAN BARIS INI
     }
 
     defaultConfig {
@@ -24,7 +25,7 @@ android {
         // KODE YANG DIUBAH: Mengganti flutter.minSdkVersion menjadi 21 agar Google Maps bisa berjalan
         minSdk = flutter.minSdkVersion
 
-        targetSdk = flutter.targetSdkVersion
+        targetSdk = 34
         // Uses the version code from pubspec.yaml. When using split APKs, 1000 * ABI_VERSION
         // is added automatically by Flutter. (https://developer.android.com/studio/build/configure-apk-splits#configure-APK-versions)
         // You can force using the value of versionCode by specifying the `-P force-version-code-ignoring-abi=true`
@@ -48,6 +49,13 @@ kotlin {
     }
 }
 
+// ... kode lainnya di atas ...
+
 flutter {
     source = "../.."
+}
+
+// TAMBAHKAN BLOK INI DI PALING BAWAH
+dependencies {
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
 }
