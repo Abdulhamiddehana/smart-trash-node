@@ -127,10 +127,8 @@ flutter doctor
 
 ### 1. Clone Repository
 
-Ganti `USERNAME` dan `REPOSITORY` dengan alamat repository GitHub proyek yang sebenarnya.
-
 ```bash
-git clone https://github.com/USERNAME/REPOSITORY.git
+git clone https://github.com/Abdulhamiddehana/smart-trash-node.git
 cd REPOSITORY
 ```
 
